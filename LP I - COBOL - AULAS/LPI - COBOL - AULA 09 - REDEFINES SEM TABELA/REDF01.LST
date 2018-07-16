@@ -1,0 +1,133 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 11-Oct-11 08:54 Page   1
+*                                      REDF01.CBL
+* Options: LIST(REDF01.LST) ASMLIST(REDF01.GRP)
+     1 IDENTIFICATION          DIVISION.
+     2
+     3 PROGRAM-ID.     REDF01.
+     4 AUTHOR.         HIROMASA NAGATA.
+     5 INSTALLATION.   FATEC-SP.
+     6 DATE-WRITTEN.   23/05/2005.
+     7 DATE-COMPILED. 11-Oct-11 08:54.
+     8 SECURITY. APENAS O AUTOR PODE MODIFICA-LO.
+     9*REMARKS.  LE UM ARQUIVO COM  DOIS TIPOS DE REGISTRO.
+    10*          O PRIMEIRO REGISTRO E O CAPA DE LOTE E OS DEMAIS
+    11*          SAO DETALHES. A PARTIR DESTES REGISTROS SAO
+    12*          MOSTRADOS DISPLAY'S, CONTENDO A MENSAGEM
+    13*          'LOTE OK', SE A TOTALIZACAO DOS REGISTROS FOR
+    14*          ADEQUADA. SE A TOTALIZACAO DOS REGISTROS FOR
+    15*          INADEQUADA, SERA GRAVADO A MENSAGEM 'LOTE REJEITADO'.
+    16
+    17 ENVIRONMENT             DIVISION.
+    18
+    19 CONFIGURATION           SECTION.
+    20
+    21 SOURCE-COMPUTER.        IBM-PC.
+    22 OBJECT-COMPUTER.        IBM-PC.
+    23 SPECIAL-NAMES.          DECIMAL-POINT IS COMMA.
+    24
+    25 INPUT-OUTPUT            SECTION.
+    26
+    27 FILE-CONTROL.
+    28     SELECT      ARQ-ENT         ASSIGN      TO      DISK
+    29     ORGANIZATION                IS          LINE    SEQUENTIAL.
+    30
+    31 DATA                    DIVISION.
+    32
+    33 FILE                    SECTION.
+    34
+    35 FD  ARQ-ENT
+    36     LABEL       RECORD          ARE         STANDARD
+    37     VALUE       OF FILE-ID      IS          "ARQ-ENT.DAT".
+    38
+    39 01  REG-LOTE.
+    40     02 QUANT-ENT            PIC  9(003).
+    41     02 VALOR-ENT            PIC  9(007)V9(002).
+    42     02 FILLER                    PIC  X(018).
+    43
+    44 01  REG-DET.
+    45     02 FILLER                     PIC  X(010).
+    46     02 VALOR-DET             PIC  9(005)V9(002).
+    47     02 FILLER                     PIC  X(013).
+    48
+    49
+    50 WORKING-STORAGE         SECTION.
+    51
+    52 77  FIM-ARQ                        PIC X(003)  VALUE "NAO".
+    53 77  CONT                             PIC 9(003)  VALUE ZEROS.
+    54 77  VALOR-TOTAL              PIC 9(007)V9(002)
+    55                                                                 VALUE ZEROS.
+    56 77  AUX-QUANT                  PIC 9(003)  VALUE ZEROS.
+    57 77  AUX-VALOR                  PIC 9(007)V9(002)
+* Microsoft COBOL Version 4.5        L2.4 revision 002 11-Oct-11 08:54 Page   2
+*                                      REDF01.CBL
+    58                                             VALUE ZEROS.
+    59
+    60 PROCEDURE               DIVISION.
+    61
+    62 PGM-REDF01.
+    63    PERFORM      INICIO.
+    64    PERFORM      PRINCIPAL       UNTIL
+    65                                                    FIM-ARQ     EQUAL   "SIM".
+    66    PERFORM      VERIFICA-TOTAL.
+    67    PERFORM      FIM.
+    68    STOP         RUN.
+    69
+    70 INICIO.
+    71    OPEN         INPUT           ARQ-ENT.
+    72    PERFORM      LEITURA-LOTE.
+    73    PERFORM      LEITURA-DET.
+    74
+    75 LEITURA-LOTE.
+    76    READ         ARQ-ENT
+    77                 AT END
+    78                 MOVE            "SIM"       TO      FIM-ARQ.
+    79    IF           FIM-ARQ         EQUAL       "SIM"
+    80         NEXT    SENTENCE
+    81    ELSE
+    82         MOVE    QUANT-ENT       TO          AUX-QUANT
+    83         MOVE    VALOR-ENT       TO          AUX-VALOR.
+    84
+    85 LEITURA-DET.
+    86
+    87    IF           FIM-ARQ         EQUAL       "SIM"
+    88         NEXT    SENTENCE
+    89    ELSE
+    90         READ    ARQ-ENT
+    91                 AT END
+    92                 MOVE            "SIM"       TO      FIM-ARQ.
+    93
+    94
+    95 PRINCIPAL.
+    96    PERFORM      ACUMULA-DET.
+    97    PERFORM      LEITURA-DET.
+    98
+    99
+   100 ACUMULA-DET.
+   101    ADD          VALOR-DET       TO          VALOR-TOTAL.
+   102    ADD          1               TO          CONT.
+   103
+   104
+   105 VERIFICA-TOTAL.
+   106    IF           (VALOR-TOTAL    EQUAL       AUX-VALOR) AND
+   107                 (CONT           EQUAL       AUX-QUANT)
+   108            DISPLAY "LOTE OK"
+   109            DISPLAY "VALOR-TOTAL: " VALOR-TOTAL
+   110            DISPLAY "CONT       : " CONT
+   111    ELSE
+   112            DISPLAY "LOTE REJEITADO"
+   113            DISPLAY "VALOR TOTAL INFORMADO         : " AUX-VALOR
+   114            DISPLAY "VALOR CONTABILIZADO           : " VALOR-TOTAL
+   115            DISPLAY "QUANTIDADE INFORMADOS         : " AUX-QUANT
+* Microsoft COBOL Version 4.5        L2.4 revision 002 11-Oct-11 08:54 Page   3
+*                                      REDF01.CBL
+   116            DISPLAY "TOTAL DE REGISTROS LIDO       : " CONT.
+   117
+   118 FIM.
+   119           CLOSE        ARQ-ENT.
+   120
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:         872     Code:         544     Dictionary:        1140

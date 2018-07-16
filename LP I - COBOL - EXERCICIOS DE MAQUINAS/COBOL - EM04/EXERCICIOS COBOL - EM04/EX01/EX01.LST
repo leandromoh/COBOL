@@ -1,0 +1,138 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Nov-13 00:23 Page   1
+*                                       EX01.CBL
+* Options: LIST(EX01.LST) ASMLIST(EX01.GRP)
+     1 IDENTIFICATION DIVISION.
+     2
+     3 PROGRAM-ID.    EX01.
+     4 AUTHOR.        LEANDRO FERNANDES & EDEL CORADI.
+     5 INSTALLATION.  FATEC-SP.
+     6 DATE-WRITTEN.  07/11/2013.
+     7 DATE-COMPILED. 26-Nov-13 00:23.
+     8 SECURITY.
+     9
+    10 ENVIRONMENT DIVISION.
+    11
+    12 CONFIGURATION SECTION.
+    13 SOURCE-COMPUTER. IBM-PC.
+    14 OBJECT-COMPUTER. IBM-PC.
+    15 SPECIAL-NAMES.   DECIMAL-POINT IS COMMA.
+    16
+    17 INPUT-OUTPUT SECTION.
+    18 FILE-CONTROL.
+    19 SELECT ARQA ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    20 SELECT ARQB ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    21 SELECT ARQC ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    22
+    23 DATA DIVISION.
+    24
+    25 FILE SECTION.
+    26 FD ARQA
+    27   LABEL RECORD ARE STANDARD VALUE OF FILE-ID IS "ARQA.DAT".
+    28
+    29 01 REG-ARQA.
+    30   02 COD-ARQA   PIC 9(03).
+    31   02 NOME-ARQA  PIC X(30).
+    32   02 TURMA-ARQA PIC X(20).
+    33
+    34 FD ARQB
+    35   LABEL RECORD ARE STANDARD VALUE OF FILE-ID IS "ARQB.DAT".
+    36
+    37 01 REG-ARQB.
+    38   02 COD-ARQB   PIC 9(03).
+    39   02 NOME-ARQB  PIC X(30).
+    40   02 TURMA-ARQB PIC X(20).
+    41
+    42 FD ARQC
+    43   LABEL RECORD ARE STANDARD VALUE OF FILE-ID IS "ARQC.DAT".
+    44
+    45 01 REG-ARQC.
+    46   02 COD-ARQC   PIC 9(03).
+    47   02 NOME-ARQC  PIC X(30).
+    48   02 TURMA-ARQC PIC X(20).
+    49
+    50 WORKING-STORAGE SECTION.
+    51
+    52 77 FIM-ARQ    PIC 9(01) VALUE 0.
+    53 77 CH-ARQA    PIC X(04) VALUE SPACES.
+    54 77 CH-ARQB    PIC X(04) VALUE SPACES.
+    55
+    56 PROCEDURE DIVISION.
+    57
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Nov-13 00:23 Page   2
+*                                       EX01.CBL
+    58 PROGRAM01.
+    59
+    60 PERFORM INICIO.
+    61 PERFORM PRINCIPAL UNTIL CH-ARQA EQUAL CH-ARQB AND
+    62                         CH-ARQB  EQUAL HIGH-VALUES.
+    63 PERFORM FIM.
+    64 STOP RUN.
+    65
+    66 INICIO.
+    67        OPEN INPUT ARQA ARQB OUTPUT ARQC.
+    68        PERFORM LER-ARQA.
+    69        PERFORM LER-ARQB.
+    70
+    71 LER-ARQA.
+    72        READ ARQA AT END MOVE HIGH-VALUES TO CH-ARQA.
+    73        IF CH-ARQA EQUAL HIGH-VALUES
+    74           NEXT SENTENCE
+    75        ELSE
+    76           MOVE COD-ARQA TO CH-ARQA
+    77        END-IF.
+    78
+    79 LER-ARQB.
+    80        READ ARQB AT END MOVE HIGH-VALUES TO CH-ARQB.
+    81        IF CH-ARQB EQUAL HIGH-VALUES
+    82           NEXT SENTENCE
+    83        ELSE
+    84           MOVE COD-ARQB TO CH-ARQB
+    85        END-IF.
+    86
+    87 PRINCIPAL.
+    88        IF CH-ARQA EQUAL CH-ARQB
+    89           PERFORM IGUAL
+    90        ELSE
+    91           IF CH-ARQA LESS CH-ARQB
+    92              PERFORM ARQA-MENOR
+    93           ELSE
+    94              PERFORM ARQB-MENOR
+    95           END-IF
+    96        END-IF.
+    97
+    98 IGUAL.
+    99        PERFORM GRAVA-ARQA.
+   100        PERFORM GRAVA-ARQB.
+   101        PERFORM LER-ARQA.
+   102        PERFORM LER-ARQB.
+   103
+   104 ARQA-MENOR.
+   105        PERFORM GRAVA-ARQA.
+   106        PERFORM LER-ARQA.
+   107
+   108 ARQB-MENOR.
+   109        PERFORM GRAVA-ARQB.
+   110        PERFORM LER-ARQB.
+   111
+   112 GRAVA-ARQB.
+   113        MOVE COD-ARQB   TO COD-ARQC.
+   114        MOVE NOME-ARQB  TO NOME-ARQC.
+   115        MOVE TURMA-ARQB TO TURMA-ARQC.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Nov-13 00:23 Page   3
+*                                       EX01.CBL
+   116        WRITE REG-ARQC.
+   117
+   118 GRAVA-ARQA.
+   119        MOVE COD-ARQA   TO COD-ARQC.
+   120        MOVE NOME-ARQA  TO NOME-ARQC.
+   121        MOVE TURMA-ARQA TO TURMA-ARQC.
+   122        WRITE REG-ARQC.
+   123
+   124 FIM.
+   125        CLOSE ARQA ARQB ARQC.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1328     Code:         571     Dictionary:        1646

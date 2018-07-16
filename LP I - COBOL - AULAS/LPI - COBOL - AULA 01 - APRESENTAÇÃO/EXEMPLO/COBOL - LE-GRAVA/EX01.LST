@@ -1,0 +1,100 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 08-Aug-13 16:21 Page   1
+*                                       EX01.CBL
+* Options: LIST(EX01.LST) ASMLIST(EX01.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.       EX00.
+     3 AUTHOR.           HIROMASA NAGATA.
+     4 INSTALLATION.     FATEC-SP.
+     5 DATE-WRITTEN.    20/08/2004.
+     6 DATE-COMPILED. 08-Aug-13 16:21.
+     7 SECURITY.  APENAS O AUTOR PODE MODIFICA-LO.
+     8*REMARKS.  LE OS REGISTRO DO ARQUIVO DE
+     9*                     ENTRADA CAD-ENT E GRAVA NO
+    10*                     ARQUIVO DE SAIDA CAD-SAI APENAS
+    11*                     OS REGISTRO DO SEXO FEMININO.
+    12 ENVIRONMENT             DIVISION.
+    13 CONFIGURATION SECTION.
+    14       SOURCE-COMPUTER. IBM-PC.
+    15       OBJECT-COMPUTER.  IBM-PC.
+    16       SPECIAL-NAMES.         DECIMAL-POINT IS COMMA.
+    17 INPUT-OUTPUT SECTION.
+    18 FILE-CONTROL.
+    19
+    20     SELECT   CAD-ENT           ASSIGN      TO      DISK
+    21     ORGANIZATION   IS           LINE         SEQUENTIAL.
+    22
+    23     SELECT    CAD-SAI          ASSIGN      TO      DISK
+    24     ORGANIZATION    IS         LINE          SEQUENTIAL.
+    25 DATA                           DIVISION.
+    26
+    27 FILE SECTION.
+    28 FD  CAD-ENT
+    29     LABEL         RECORD          ARE     STANDARD
+    30     VALUE        OF FILE-ID       IS      "CAD-ENT.DAT".
+    31
+    32 01  REG-ENT.
+    33       02 COD-ENT       PIC 9(04).
+    34       02 NOME-ENT      PIC X(30).
+    35       02 SEXO-ENT      PIC X(01).
+    36 FD  CAD-SAI
+    37     LABEL         RECORD         ARE        STANDARD
+    38     VALUE        OF FILE-ID      IS       "CAD-SAI.DAT".
+    39
+    40 01   REG-SAI.
+    41      03 COD-SAI                       PIC 9(04).
+    42      03 NOME-SAI                      PIC X(030).
+    43
+    44 WORKING-STORAGE SECTION.
+    45
+    46 77  FIM-ARQ          PIC X(03)             VALUE   "NAO".
+    47 PROCEDURE                                   DIVISION.
+    48
+    49 PGM-EXEMPLO00.
+    50
+    51   PERFORM    INICIO.
+    52
+    53   PERFORM    PRINCIPAL
+    54                       UNTIL       FIM-ARQ      EQUAL     "SIM".
+    55
+    56   PERFORM   TERMINO.
+    57
+* Microsoft COBOL Version 4.5        L2.4 revision 002 08-Aug-13 16:21 Page   2
+*                                       EX01.CBL
+    58      STOP RUN.
+    59 INICIO.
+    60
+    61    OPEN INPUT        CAD-ENT
+    62         OUTPUT       CAD-SAI.
+    63
+    64    PERFORM       LEITURA.
+    65
+    66
+    67 LEITURA.
+    68
+    69    READ CAD-ENT
+    70              AT END
+    71              MOVE        "SIM"        TO        FIM-ARQ.
+    72 PRINCIPAL.
+    73
+    74    PERFORM             GRAVACAO.
+    75    PERFORM             LEITURA.
+    76
+    77
+    78 GRAVACAO.
+    79
+    80    MOVE      COD-ENT      TO          COD-SAI.
+    81    MOVE      NOME-ENT     TO          NOME-SAI.
+    82    WRITE     REG-SAI.
+    83
+    84
+    85  TERMINO.
+    86     CLOSE       CAD-ENT
+    87                 CAD-SAI.
+    88
+    89
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1032     Code:         313     Dictionary:        1046

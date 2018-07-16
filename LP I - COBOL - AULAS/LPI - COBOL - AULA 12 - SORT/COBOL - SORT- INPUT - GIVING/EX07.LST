@@ -1,0 +1,108 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 24-Sep-04 23:52 Page   1
+*                                       EX07.CBL
+* Options: LIST(EX07.LST) ASMLIST(EX07.GRP)
+     1 IDENTIFICATION  DIVISION.
+     2 PROGRAM-ID. EXEMPLO07.
+     3 AUTHOR. ANGELA/HIRO.
+     4 INSTALLATION. FATEC-SP.
+     5 DATE-WRITTEN. 24/09/2004.
+     6 DATE-COMPILED. 24-Sep-04 23:52.
+     7 SECURITY. APENAS O AUTOR PODE MODIFICA-LO.
+     8*REMARKS.  FAZ O SORT DO ARQUIVO DE ENTRADA.
+     9*          USANDO INPUT E GIVING
+    10*          SELECIONAR SOMENTE PESSOA DO SEXO MASCULINO (M)
+    11*          GERANDO COMO SAIDA UM ARQUIVO CLASSIFICADO.
+    12
+    13 ENVIRONMENT     DIVISION.
+    14 CONFIGURATION   SECTION.
+    15 SOURCE-COMPUTER. IBM-PC.
+    16 OBJECT-COMPUTER. IBM-PC.
+    17 SPECIAL-NAMES.  DECIMAL-POINT IS COMMA.
+    18
+    19 INPUT-OUTPUT    SECTION.
+    20 FILE-CONTROL.
+    21     SELECT ENTRADA ASSIGN  TO DISK
+    22     ORGANIZATION   IS LINE SEQUENTIAL.
+    23     SELECT TRAB    ASSIGN  TO DISK.
+    24     SELECT SAIDA   ASSIGN  TO DISK
+    25     ORGANIZATION   IS LINE SEQUENTIAL.
+    26
+    27 DATA            DIVISION.
+    28 FILE            SECTION.
+    29
+    30 FD  ENTRADA
+    31     LABEL RECORD ARE STANDARD
+    32     VALUE OF FILE-ID IS "ENT.DAT".
+    33
+    34 01  REG-ENT.
+    35     02 COD-ENT  PIC 9(04).
+    36     02 SEXO-ENT PIC X(01).
+    37     02 NOME-ENT PIC X(30).
+    38
+    39 SD  TRAB.
+    40 01  REG-TRAB.
+    41     02 COD-TRAB  PIC 9(04).
+    42     02 SEXO-TRAB PIC X(01).
+    43     02 NOME-TRAB PIC X(30).
+    44
+    45 FD  SAIDA
+    46     LABEL RECORD ARE STANDARD
+    47     VALUE OF FILE-ID IS "SAI.DAT".
+    48
+    49 01  REG-SAI.
+    50     02 COD-SAI  PIC 9(04).
+    51     02 SEXO-SAI PIC X(01).
+    52     02 NOME-SAI PIC X(30).
+    53
+    54 WORKING-STORAGE SECTION.
+    55 77  FIM-ARQ      PIC X(03) VALUE "NAO".
+    56
+    57 PROCEDURE       DIVISION.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 24-Sep-04 23:52 Page   2
+*                                       EX07.CBL
+    58
+    59 PGM-EX07.
+    60     SORT        TRAB
+    61                 ASCENDING  KEY  COD-TRAB
+    62                 INPUT      PROCEDURE        ROT-ENTRADA
+    63                 GIVING     SAIDA.
+    64     STOP        RUN.
+    65
+    66 ROT-ENTRADA             SECTION.
+    67     PERFORM     INICIO-ENTRADA.
+    68     PERFORM     PRINCIPAL-ENTRADA
+    69                 UNTIL      FIM-ARQ  EQUAL   "SIM".
+    70     PERFORM     FIM-ENTRADA.
+    71
+    72 INICIO-ENTRADA          SECTION.
+    73     OPEN        INPUT   ENTRADA.
+    74     PERFORM     LEITURA-ENTRADA.
+    75
+    76 LEITURA-ENTRADA         SECTION.
+    77     READ        ENTRADA
+    78                 AT END
+    79                 MOVE      "SIM"     TO      FIM-ARQ.
+    80
+    81 PRINCIPAL-ENTRADA       SECTION.
+    82     PERFORM     SELECAO-ENTRADA.
+    83     PERFORM     LEITURA-ENTRADA.
+    84
+    85 SELECAO-ENTRADA         SECTION.
+    86     IF          SEXO-ENT        EQUAL       "M"
+    87         PERFORM GRAVACAO-ENTRADA.
+    88
+    89 GRAVACAO-ENTRADA        SECTION.
+    90     MOVE        COD-ENT         TO          COD-TRAB.
+    91     MOVE        SEXO-ENT        TO          SEXO-TRAB.
+    92     MOVE        NOME-ENT        TO          NOME-TRAB.
+    93     RELEASE     REG-TRAB.
+    94
+    95 FIM-ENTRADA             SECTION.
+    96     CLOSE       ENTRADA.
+    97
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1244     Code:         488     Dictionary:        1620

@@ -1,0 +1,118 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 02-Mar-13 09:34 Page   1
+*                                       EX02.CBL
+* Options: LIST(EX02.LST) ASMLIST(EX02.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID. EXMEDIA.
+     3 AUTHOR. HIROMASA NAGATA.
+     4 INSTALLATION. FATEC-SP.
+     5 DATE-WRITTEN. 02/03/2011.
+     6 DATE-COMPILED. 02-Mar-13 09:34.
+     7 SECURITY. APENAS O AUTOR PODE MODIFICA-LO. *REMARKS. LE OS REGIST
+     8*REMARKS.ENTRADA CAD-ENT, CALCULA A MEDIA
+     9* E GRAVA O ARQUIVO DE SAIDA CAD-SAI.
+    10 ENVIRONMENT DIVISION.
+    11 CONFIGURATION SECTION.
+    12 SOURCE-COMPUTER. IBM-PC.
+    13 OBJECT-COMPUTER. IBM-PC.
+    14 SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    15 INPUT-OUTPUT SECTION.
+    16 FILE-CONTROL.
+    17     SELECT CAD-ENT ASSIGN TO DISK
+    18     ORGANIZATION IS LINE SEQUENTIAL.
+    19     SELECT CAD-SAI ASSIGN TO DISK
+    20     ORGANIZATION IS LINE SEQUENTIAL.
+    21 DATA DIVISION.
+    22 FILE SECTION.
+    23 FD CAD-ENT
+    24    LABEL RECORD ARE STANDARD
+    25    VALUE OF FILE-ID IS “CAD-ENT.DAT".
+*   4-S************************                                        (   0)**
+**    Illegal character
+* 205-S***********************************                             (   1)**
+**    RECORD missing or has zero size
+*1004-E*************************************                           (   1)**
+**    Continuation character expected. End of literal assumed.
+    26 01 REG-ENT.
+    27    03 COD-ENT   PIC 9(04).
+* 206-S*****                                                           (   1)**
+**    01 or 77 level required
+    28    03 NOTA1-ENT PIC 9(02)V9(02).
+    29    03 NOTA2-ENT PIC 99V99.
+    30    03 SEXO-ENT  PIC X(01).
+    31 FD CAD-SAI
+*  12-S**********                                                      (   1)**
+**    Operand  is not declared
+    32    LABEL RECORD ARE STANDARD
+    33    VALUE OF FILE-ID IS "CAD-SAI.DAT".
+    34 01 REG-SAI.
+    35    03 COD-SAI   PIC 9(04).
+    36    03 MEDIA-SAI PIC 9(02)V99.
+    37 WORKING-STORAGE SECTION.
+    38 77 FIM-ARQ      PIC X(03) VALUE "NÃO”.
+*1004-E**************************************                          (   1)**
+**    Continuation character expected. End of literal assumed.
+    39 77 SOMA-NOTA    PIC 9(02)V9(02) VALUE ZEROS.
+*1014-E**                                                              (   1)**
+**    Period missing. Period assumed.
+*1007-E**                                                              (   1)**
+**    VALUE literal too large. Literal truncated.
+    40 77 WMEDIA       PIC 99V99 VALUE ZEROS
+    41
+* Microsoft COBOL Version 4.5        L2.4 revision 002 02-Mar-13 09:34 Page   2
+*                                       EX02.CBL
+    42
+    43 PROCEDURE DIVISION.
+*1014-E*********                                                       (   1)**
+**    Period missing. Period assumed.
+*      CAD-SAI
+* 244-S*******                                                         (   2)**
+**    FD missing for file CAD-SAI
+    44 PGM-EXEMPLO00.
+    45     PERFORM INICIO.
+    46     PERFORM PRINCIPAL
+    47             UNTIL FIM-ARQ EQUAL "SIM".
+    48     PERFORM TERMINO.
+    49     STOP RUN.
+    50 INICIO.
+    51     OPEN INPUT  CAD-ENT
+    52          OUTPUT CAD-SAI.
+*  12-S***********************                                         (   2)**
+**    Operand  is not declared
+    53     PERFORM LEITURA.
+    54 LEITURA.
+    55     READ CAD-ENT
+    56          AT END
+    57          MOVE "SIM" TO FIM-ARQ.
+    58 PRINCIPAL.
+    59     PERFORM CALCMEDIA.
+    60     PERFORM GRAVACAO.
+    61     PERFORM LEITURA.
+    62 CALCMEDIA.
+    63     ADD NOTA1-ENT NOTA2-ENT GIVING SOMA-NOTA.
+    64     DIVIDE SOMA-NOTA BY 2   GIVING WMEDIA.
+    65
+    66 GRAVACAO.
+    67     MOVE COD-ENT TO COD-SAI.
+*  12-S****************                                                (   2)**
+**    Operand  is not declared
+    68     MOVE WMEDIA TO MEDIA-SAI.
+    69     WRITE REG-SAI.
+* 330-S*****************                                               (   2)**
+**    Not a record name
+    70
+    71 TERMINO.
+    72     CLOSE CAD-ENT
+    73           CAD-SAI.
+* 301-S*****************                                               (   2)**
+**    Unrecognized verb
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Last message on page:  2
+*
+* Total Messages:    14
+* Unrecoverable :     0                    Severe  :     9
+* Errors        :     5                    Warnings:     0
+* Informational :     0                    Flags   :     0
+* Data:        1000     Code:         270     Dictionary:        1295

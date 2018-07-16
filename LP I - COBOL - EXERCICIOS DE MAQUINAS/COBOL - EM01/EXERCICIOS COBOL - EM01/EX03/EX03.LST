@@ -1,0 +1,87 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 28-Aug-13 20:59 Page   1
+*                                       EX03.CBL
+* Options: LIST(EX03.LST) ASMLIST(EX03.GRP)
+     1 IDENTIFICATION DIVISION.
+     2
+     3 PROGRAM-ID. EX03.
+     4 AUTHOR. LEANDRO FERNANDES & EDEL CORADI.
+     5 INSTALLATION. FATEC-SP.
+     6 DATE-WRITTEN. 10/08/2013.
+     7 DATE-COMPILED. 28-Aug-13 20:59.
+     8 SECURITY.
+     9
+    10 ENVIRONMENT DIVISION.
+    11
+    12 CONFIGURATION SECTION.
+    13 SOURCE-COMPUTER. IBM-PC.
+    14 OBJECT-COMPUTER. IBM-PC.
+    15 SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    16
+    17 INPUT-OUTPUT SECTION.
+    18 FILE-CONTROL.
+    19 SELECT CADALU ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    20 SELECT CADATU ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    21
+    22 DATA DIVISION.
+    23
+    24 FILE SECTION.
+    25 FD CADALU
+    26    LABEL         RECORD         ARE         STANDARD
+    27    VALUE       OF FILE-ID       IS        "CADALU.DAT".
+    28
+    29 01 REG-ENT.
+    30        02 NUMERO PIC 9(5).
+    31        02 NOME  PIC X(20).
+    32        02 NOTA1 PIC 9(2)V99.
+    33        02 NOTA2 PIC 9(2)V99.
+    34        02 NOTA3 PIC 9(2)V99.
+    35
+    36 FD CADATU
+    37    LABEL         RECORD         ARE         STANDARD
+    38    VALUE       OF FILE-ID       IS        "CADATU.DAT".
+    39
+    40 01 REG-SAI.
+    41        02 NUMERO-SAI PIC 9(5).
+    42        02 MEDIA-SAI PIC 9(2)V99.
+    43
+    44 WORKING-STORAGE SECTION.
+    45 77 MEDIA  PIC 9(2)V99.
+    46 77 FIM-ARQ  PIC 9(1) VALUE 0.
+    47
+    48 PROCEDURE DIVISION.
+    49
+    50 PROGRAMA03.
+    51
+    52 PERFORM INICIO.
+    53 PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL 1.
+    54 PERFORM TERMINO.
+    55
+    56 STOP RUN.
+    57
+* Microsoft COBOL Version 4.5        L2.4 revision 002 28-Aug-13 20:59 Page   2
+*                                       EX03.CBL
+    58 INICIO.
+    59        OPEN INPUT CADALU OUTPUT CADATU.
+    60        PERFORM VERIFICA-FIM.
+    61 CALCULA-MEDIA.
+    62        MOVE 0 TO MEDIA.
+    63        ADD NOTA1 NOTA2 NOTA3 TO MEDIA.
+    64        DIVIDE 3 INTO MEDIA.
+    65 COPIA.
+    66        MOVE NUMERO TO NUMERO-SAI.
+    67        PERFORM CALCULA-MEDIA.
+    68        MOVE MEDIA TO MEDIA-SAI.
+    69        WRITE REG-SAI.
+    70 VERIFICA-FIM.
+    71        READ CADALU AT END MOVE 1 TO FIM-ARQ.
+    72 TERMINO.
+    73        CLOSE CADALU CADATU.
+    74 PRINCIPAL.
+    75        PERFORM COPIA.
+    76        PERFORM VERIFICA-FIM.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1024     Code:         353     Dictionary:        1188

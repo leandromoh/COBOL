@@ -1,0 +1,96 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 28-Aug-13 21:06 Page   1
+*                                       EX08.CBL
+* Options: LIST(EX08.LST) ASMLIST(EX08.GRP)
+     1 IDENTIFICATION DIVISION.
+     2
+     3 PROGRAM-ID. EX08.
+     4 AUTHOR. LEANDRO FERNANDES & EDEL CORADI.
+     5 INSTALLATION. FATEC-SP.
+     6 DATE-WRITTEN. 12/08/2013.
+     7 DATE-COMPILED. 28-Aug-13 21:06.
+     8 SECURITY.
+     9
+    10 ENVIRONMENT DIVISION.
+    11
+    12 CONFIGURATION SECTION.
+    13 SOURCE-COMPUTER. IBM-PC.
+    14 OBJECT-COMPUTER. IBM-PC.
+    15 SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    16
+    17 INPUT-OUTPUT SECTION.
+    18 FILE-CONTROL.
+    19 SELECT CADFUN ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    20 SELECT CADSAI ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    21
+    22 DATA DIVISION.
+    23
+    24 FILE SECTION.
+    25 FD CADFUN
+    26    LABEL         RECORD         ARE         STANDARD
+    27    VALUE       OF FILE-ID       IS        "CADFUN.DAT".
+    28
+    29 01 REG-ENT.
+    30        02 CODIGO    PIC 9(5).
+    31        02 NOME     PIC X(20).
+    32        02 SALARIO-BRUTO  PIC 9(5)V99.
+    33
+    34 FD CADSAI
+    35    LABEL         RECORD         ARE         STANDARD
+    36    VALUE       OF FILE-ID       IS        "CADSAI.DAT".
+    37
+    38 01 REG-SAI.
+    39        02 CODIGO-SAI    PIC 9(5).
+    40        02 NOME-SAI     PIC X(20).
+    41        02 SALARIO-REAJUSTADO PIC 9(5)V99.
+    42
+    43 WORKING-STORAGE SECTION.
+    44 77 FIM-ARQ  PIC 9(1) VALUE 0.
+    45 77 REAJUSTE PIC 9(5)V99.
+    46
+    47 PROCEDURE DIVISION.
+    48
+    49 PROGRAMA08.
+    50
+    51 PERFORM INICIO.
+    52 PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL 1.
+    53 PERFORM TERMINO.
+    54
+    55 STOP RUN.
+    56
+    57 INICIO.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 28-Aug-13 21:06 Page   2
+*                                       EX08.CBL
+    58        OPEN INPUT CADFUN OUTPUT CADSAI.
+    59        PERFORM VERIFICA-FIM.
+    60 COPIA.
+    61        PERFORM CALCULA-REAJUSTE.
+    62        MOVE CODIGO TO CODIGO-SAI.
+    63        MOVE NOME TO NOME-SAI.
+    64        MOVE REAJUSTE TO SALARIO-REAJUSTADO.
+    65        WRITE REG-SAI.
+    66 VERIFICA-FIM.
+    67        READ CADFUN AT END MOVE 1 TO FIM-ARQ.
+    68 CALCULA-REAJUSTE.
+    69        IF SALARIO-BRUTO NOT GREATER 1000
+    70               MULTIPLY SALARIO-BRUTO BY 1,12
+    71                                    GIVING REAJUSTE
+    72        ELSE
+    73               IF SALARIO-BRUTO NOT GREATER 2000
+    74                      MULTIPLY SALARIO-BRUTO BY 1,11
+    75                                    GIVING REAJUSTE
+    76               ELSE
+    77                      MULTIPLY SALARIO-BRUTO BY 1,10
+    78                                    GIVING REAJUSTE
+    79               END-IF
+    80        END-IF.
+    81 PRINCIPAL.
+    82        PERFORM COPIA.
+    83        PERFORM VERIFICA-FIM.
+    84 TERMINO.
+    85        CLOSE CADFUN CADSAI.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1044     Code:         395     Dictionary:        1184

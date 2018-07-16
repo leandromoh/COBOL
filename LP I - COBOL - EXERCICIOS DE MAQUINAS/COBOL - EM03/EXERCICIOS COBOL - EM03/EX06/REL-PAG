@@ -1,0 +1,41 @@
+                                                                                
+                             RELATÓRIO DE PAGAMENTO                   PAG.   1  
+
+ DEPARTAMENTO  = A                                                              
+ SEÇÃO         = A                                                              
+
+CODIGO  NOME                SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO
+43534 JOSE DA SILVA           4000,00      10,02    4010,02   400,00    3610,02 
+15367 GUILHERME NEVES         4500,00      30,03    4530,03   210,00    4320,03 
+26567 HENRIQUE SEIXAS         5000,00      20,00    5020,00   300,00    4720,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO:      12.650,05                                      
+
+ SEÇÃO         = C                                                              
+
+CODIGO  NOME                SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO
+12345 MARIA DE OLIVEIRA       2000,00       5,00    2005,00   100,00    1905,00 
+23694 MARIANA MORAES FILHO    5000,00      25,00    5025,00   150,00    4875,00 
+74546 SAMARA MAGALHAES        4000,00      40,01    4040,01   400,00    3640,01 
+
+TOTAL DE SALÁRIOS DA SEÇÃO:      10.420,01                                      
+TOTAL DE SALÁRIOS DO DEPARTAMENTO:          23.070,06                                                                                                           
+                             RELATÓRIO DE PAGAMENTO                   PAG.   2  
+
+ DEPARTAMENTO  = B                                                              
+ SEÇÃO         = X                                                              
+
+CODIGO  NOME                SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO
+56782 SEBASTIÃO FERNANDES     8000,00      25,00    8025,00   700,00    7325,00 
+64378 WEBER NASCIMENTO        3500,00       6,00    3506,00   230,00    3276,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO:      10.601,00                                      
+
+ SEÇÃO         = Z                                                              
+
+CODIGO  NOME                SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO
+86237 STEPHANIE SEIXAS        3000,00      16,50    3016,50   250,00    2766,50 
+75634 FLAVIA LINO DO CARMO    4300,00      11,51    4311,51   450,00    3861,51 
+
+TOTAL DE SALÁRIOS DA SEÇÃO:       6.628,01                                      
+TOTAL DE SALÁRIOS DO DEPARTAMENTO:          17.229,01                           

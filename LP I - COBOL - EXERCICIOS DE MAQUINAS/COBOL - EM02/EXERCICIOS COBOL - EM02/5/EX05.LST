@@ -1,0 +1,187 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Sep-13 13:23 Page   1
+*                                       EX05.CBL
+* Options: LIST(EX05.LST) ASMLIST(EX05.GRP)
+     1 IDENTIFICATION DIVISION.
+     2
+     3 PROGRAM-ID. EX05.
+     4 AUTHOR. LEANDRO FERNANDES & EDEL CORADI.
+     5 INSTALLATION. FATEC-SP.
+     6 DATE-WRITTEN. 15/09/2013.
+     7 DATE-COMPILED. 26-Sep-13 13:23.
+     8 SECURITY.
+     9
+    10 ENVIRONMENT DIVISION.
+    11
+    12 CONFIGURATION SECTION.
+    13 SOURCE-COMPUTER. IBM-PC.
+    14 OBJECT-COMPUTER. IBM-PC.
+    15 SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    16
+    17 INPUT-OUTPUT SECTION.
+    18 FILE-CONTROL.
+    19 SELECT ARQALU   ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    20 SELECT ARQREP   ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    21 SELECT RELAPROV ASSIGN TO DISK.
+    22
+    23 DATA DIVISION.
+    24
+    25 FILE SECTION.
+    26 FD ARQALU
+    27    LABEL         RECORD         ARE         STANDARD
+    28    VALUE       OF FILE-ID       IS        "ARQALU.DAT".
+    29
+    30 01 REG-ALU.
+    31        02 MATRICULA  PIC 9(07).
+    32        02 NOME       PIC X(30).
+    33        02 NOTA1      PIC 9(02)V9(2).
+    34        02 NOTA2      PIC 9(02)V9(2).
+    35        02 NOTA3      PIC 9(02)V9(2).
+    36        02 FALTAS     PIC 9(02).
+    37        02 SEXO       PIC X(01).
+    38
+    39 FD ARQREP
+    40    LABEL         RECORD         ARE         STANDARD
+    41    VALUE       OF FILE-ID       IS        "ARQREP.DAT".
+    42
+    43 01 REG-REP.
+    44        02 MATRICULA-SAI  PIC 9(07).
+    45        02 NOME-SAI       PIC X(30).
+    46        02 NOTA1-SAI      PIC 9(02)V9(2).
+    47        02 NOTA2-SAI      PIC 9(02)V9(2).
+    48        02 NOTA3-SAI      PIC 9(02)V9(2).
+    49        02 FALTAS-SAI     PIC 9(02).
+    50        02 SEXO-SAI       PIC X(01).
+    51
+    52 FD  RELAPROV
+    53     LABEL        RECORD         IS          OMITTED.
+    54
+    55 01  REG-ATR                  PIC X(80).
+    56
+    57 WORKING-STORAGE SECTION.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Sep-13 13:23 Page   2
+*                                       EX05.CBL
+    58
+    59 77 FIM-ARQ     PIC 9(01) VALUE 0.
+    60 77 CT-LIN      PIC 9(02) VALUE 31.
+    61 77 CT-PAG      PIC 9(02) VALUE ZEROES.
+    62 77 MEDIA       PIC 9(02)V9(02).
+    63 77 SOMA-NOTAS  PIC 9(04)V9(02) VALUE ZEROES.
+    64
+    65 01 CAB-01.
+    66    02 FILLER      PIC X(25) VALUE SPACES.
+    67    02 FILLER      PIC X(28) VALUE "RELAÇÃO DE ALUNOS APROVADOS".
+    68    02 FILLER      PIC X(16) VALUE SPACES.
+    69    02 FILLER      PIC X(05) VALUE "PAG. ".
+    70    02 VAR-PAG     PIC 999.
+    71    02 FILLER      PIC X(03) VALUE SPACES.
+    72
+    73 01 CAB-02.
+    74    02 FILLER    PIC X(05) VALUE SPACES.
+    75    02 FILLER    PIC X(06) VALUE "NÚMERO".
+    76    02 FILLER    PIC X(14) VALUE SPACES.
+    77    02 FILLER    PIC X(13) VALUE "NOME DO ALUNO".
+    78    02 FILLER    PIC X(15) VALUE SPACES.
+    79    02 FILLER    PIC X(05) VALUE "MÉDIA".
+    80    02 FILLER    PIC X(08) VALUE SPACES.
+    81    02 FILLER    PIC X(06) VALUE "FALTAS".
+    82    02 FILLER    PIC X(08) VALUE SPACES.
+    83
+    84 01 CAB-03.
+    85    02 FILLER      PIC X(05) VALUE SPACES.
+    86    02 FILLER      PIC X(27) VALUE "Total de alunos aprovados: ".
+    87    02 TOTAL-APROV PIC 9(04) VALUE ZEROES.
+    88    02 FILLER      PIC X(44) VALUE SPACES.
+    89
+    90 01 CAB-04.
+    91    02 FILLER           PIC X(05) VALUE SPACES.
+    92    02 FILLER           PIC X(23) VALUE "Media geral da turma:  ".
+    93    02 MASC-MEDIA-GERAL PIC Z9,99.
+    94    02 FILLER           PIC X(48) VALUE SPACES.
+    95
+    96 01 DETALHE.
+    97    02 FILLER         PIC X(05)  VALUE SPACES.
+    98    02 MATRICULA-REL  PIC X(08)  VALUE "999999-9".
+    99    02 FILLER         PIC X(05)  VALUE SPACES.
+   100    02 NOME-REL       PIC X(30).
+   101    02 FILLER         PIC X(05)  VALUE SPACES.
+   102    02 MEDIA-REL      PIC Z9,99.
+   103    02 FILLER         PIC X(10)  VALUE SPACES.
+   104    02 FALTAS-REL     PIC 9(02).
+   105    02 FILLER         PIC X(11)  VALUE SPACES.
+   106
+   107 PROCEDURE DIVISION.
+   108
+   109 PROGRAMA05.
+   110
+   111 PERFORM INICIO.
+   112 PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL 1.
+   113 PERFORM CABECALHO-FINAL.
+   114 PERFORM TERMINO.
+   115
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Sep-13 13:23 Page   3
+*                                       EX05.CBL
+   116 STOP RUN.
+   117
+   118 INICIO.
+   119        OPEN INPUT ARQALU OUTPUT ARQREP RELAPROV.
+   120        PERFORM VERIFICA-FIM.
+   121 VERIFICA-FIM.
+   122        READ ARQALU AT END MOVE 1 TO FIM-ARQ.
+   123 CALCULA-MEDIA.
+   124        ADD NOTA1 NOTA2 NOTA3 GIVING MEDIA.
+   125        DIVIDE 3 INTO MEDIA.
+   126 COPIA.
+   127        MOVE MATRICULA  TO MATRICULA-SAI.
+   128        MOVE NOME       TO NOME-SAI.
+   129        MOVE NOTA1      TO NOTA1-SAI.
+   130        MOVE NOTA2      TO NOTA2-SAI.
+   131        MOVE NOTA3      TO NOTA3-SAI.
+   132        MOVE FALTAS     TO FALTAS-SAI.
+   133        MOVE SEXO       TO SEXO-SAI.
+   134        WRITE REG-REP.
+   135 IMPRESSAO.
+   136        PERFORM CALCULA-MEDIA.
+   137        IF MEDIA NOT LESS THAN 7 AND FALTAS LESS THAN 16
+   138               IF CT-LIN GREATER THAN 30
+   139                      PERFORM CABECALHO
+   140               END-IF
+   141               PERFORM IMPDET
+   142        ELSE
+   143               PERFORM COPIA
+   144        END-IF.
+   145 TERMINO.
+   146        CLOSE ARQALU ARQREP RELAPROV.
+   147 PRINCIPAL.
+   148        PERFORM IMPRESSAO.
+   149        PERFORM VERIFICA-FIM.
+   150 IMPDET.
+   151        MOVE MATRICULA (1:6) TO MATRICULA-REL (1:6).
+   152        MOVE MATRICULA (7:1) TO MATRICULA-REL (8:1).
+   153        MOVE NOME      TO NOME-REL.
+   154        MOVE MEDIA     TO MEDIA-REL.
+   155        MOVE FALTAS    TO FALTAS-REL.
+   156        WRITE REG-ATR FROM DETALHE AFTER ADVANCING 1 LINE.
+   157        ADD 1 TO CT-LIN.
+   158        ADD 1 TO TOTAL-APROV.
+   159        ADD MEDIA TO SOMA-NOTAS.
+   160 CABECALHO.
+   161        ADD 1 TO CT-PAG.
+   162        MOVE CT-PAG TO VAR-PAG.
+   163        WRITE REG-ATR FROM CAB-01 AFTER ADVANCING PAGE.
+   164        WRITE REG-ATR FROM CAB-02 AFTER ADVANCING 2 LINES.
+   165        MOVE SPACES TO REG-ATR.
+   166        WRITE REG-ATR AFTER ADVANCING 1 LINE.
+   167        MOVE 1 TO CT-LIN.
+   168 CABECALHO-FINAL.
+   169        DIVIDE TOTAL-APROV INTO SOMA-NOTAS
+   170                               GIVING MASC-MEDIA-GERAL.
+   171        WRITE REG-ATR FROM CAB-03 AFTER ADVANCING 2 LINES.
+   172        WRITE REG-ATR FROM CAB-04 AFTER ADVANCING 1 LINE.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Sep-13 13:23 Page   4
+*                                       EX05.CBL
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1768     Code:         823     Dictionary:        2457

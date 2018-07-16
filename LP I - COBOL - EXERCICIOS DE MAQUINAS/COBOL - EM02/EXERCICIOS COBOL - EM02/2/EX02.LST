@@ -1,0 +1,156 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Sep-13 13:12 Page   1
+*                                       EX02.CBL
+* Options: LIST(EX02.LST) ASMLIST(EX02.GRP)
+     1 IDENTIFICATION DIVISION.
+     2
+     3 PROGRAM-ID. EX02.
+     4 AUTHOR. LEANDRO FERNANDES & EDEL CORADI.
+     5 INSTALLATION. FATEC-SP.
+     6 DATE-WRITTEN. 08/09/2013.
+     7 DATE-COMPILED. 26-Sep-13 13:12.
+     8 SECURITY.
+     9
+    10 ENVIRONMENT DIVISION.
+    11
+    12 CONFIGURATION SECTION.
+    13 SOURCE-COMPUTER. IBM-PC.
+    14 OBJECT-COMPUTER. IBM-PC.
+    15 SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    16
+    17 INPUT-OUTPUT SECTION.
+    18 FILE-CONTROL.
+    19 SELECT CADCLI ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    20 SELECT RELCLI ASSIGN TO DISK.
+    21
+    22 DATA DIVISION.
+    23
+    24 FILE SECTION.
+    25 FD CADCLI
+    26    LABEL         RECORD         ARE         STANDARD
+    27    VALUE       OF FILE-ID       IS        "CADCLI.DAT".
+    28
+    29 01 REG-ENT.
+    30        02 CPF-CLI            PIC 9(11).
+    31        02 NOME-CLI           PIC X(30).
+    32        02 ESTADO-CLI         PIC X(02).
+    33        02 CIDADE-CLI         PIC X(30).
+    34        02 TELEFONE-CLI       PIC 9(08).
+    35        02 ULTIMA-VISITA-CLI.
+    36               03 DD          PIC 9(2).
+    37               03 MM          PIC 9(2).
+    38               03 AAAA        PIC 9(4).
+    39
+    40 FD  RELCLI
+    41     LABEL        RECORD         IS          OMITTED.
+    42
+    43 01  REG-ATR                  PIC X(80).
+    44
+    45 WORKING-STORAGE SECTION.
+    46
+    47 77 FIM-ARQ     PIC 9(01) VALUE 0.
+    48 77 CT-LIN      PIC 9(02) VALUE 26.
+    49 77 CT-PAG      PIC 9(02) VALUE ZEROES.
+    50
+    51 01 CAB-01.
+    52    02 FILLER    PIC X(70) VALUE SPACES.
+    53    02 FILLER    PIC X(05) VALUE "PAG. ".
+    54    02 VAR-PAG   PIC 99.
+    55    02 FILLER    PIC X(03) VALUE SPACES.
+    56
+    57 01 CAB-02.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Sep-13 13:12 Page   2
+*                                       EX02.CBL
+    58    02 FILLER    PIC X(31) VALUE SPACES.
+    59    02 FILLER    PIC X(17) VALUE "TURISMAR TURISMOS".
+    60    02 FILLER    PIC X(32) VALUE SPACES.
+    61
+    62 01 CAB-03.
+    63    02 FILLER    PIC X(22) VALUE SPACES.
+    64    02 FILLER    PIC X(35)
+    65                 VALUE "CLIENTES NO PERÍODO DE: 2010 A 2011".
+    66    02 FILLER    PIC X(23) VALUE SPACES.
+    67
+    68 01 CAB-04.
+    69    02 FILLER    PIC X(12) VALUE SPACES.
+    70    02 FILLER    PIC X(04) VALUE "NOME".
+    71    02 FILLER    PIC X(26) VALUE SPACES.
+    72    02 FILLER    PIC X(06) VALUE "ESTADO".
+    73    02 FILLER    PIC X(11) VALUE SPACES.
+    74    02 FILLER    PIC X(08) VALUE "TELEFONE".
+    75    02 FILLER    PIC X(13) VALUE SPACES.
+    76
+    77 01 CAB-05.
+    78    02 FILLER      PIC X(05)  VALUE SPACES.
+    79    02 FILLER      PIC X(19) VALUE "Total de Clientes: ".
+    80    02 TOTAL-CLI   PIC 9(05) VALUE ZEROES.
+    81    02 FILLER      PIC X(51) VALUE SPACES.
+    82
+    83 01 CAB-06.
+    84    02 FILLER      PIC X(80) VALUE ALL "-".
+    85
+    86 01 DETALHE.
+    87    02 FILLER    PIC X(06) VALUE SPACES.
+    88    02 NOME      PIC X(30).
+    89    02 FILLER    PIC X(08) VALUE SPACES.
+    90    02 ESTADO    PIC X(02).
+    91    02 FILLER    PIC X(13) VALUE SPACES.
+    92    02 TELEFONE  PIC X(09) VALUE "XXXX-XXXX".
+    93    02 FILLER    PIC X(08) VALUE SPACES.
+    94
+    95 PROCEDURE DIVISION.
+    96
+    97 PROGRAMA05.
+    98
+    99 PERFORM INICIO.
+   100 PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL 1.
+   101 PERFORM CABECALHO-FINAL.
+   102 PERFORM TERMINO.
+   103
+   104 STOP RUN.
+   105
+   106 INICIO.
+   107        OPEN INPUT CADCLI OUTPUT RELCLI.
+   108        PERFORM VERIFICA-FIM.
+   109 VERIFICA-FIM.
+   110        READ CADCLI AT END MOVE 1 TO FIM-ARQ.
+   111 IMPRESSAO.
+   112        IF CT-LIN GREATER THAN 25
+   113               PERFORM CABECALHO.
+   114        PERFORM IMPDET.
+   115 TERMINO.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Sep-13 13:12 Page   3
+*                                       EX02.CBL
+   116        CLOSE CADCLI RELCLI.
+   117 PRINCIPAL.
+   118        IF AAAA >= 2010 AND <= 2011
+   119               PERFORM IMPRESSAO.
+   120        PERFORM VERIFICA-FIM.
+   121 IMPDET.
+   122        MOVE NOME-CLI           TO NOME.
+   123        MOVE ESTADO-CLI         TO ESTADO.
+   124        MOVE TELEFONE-CLI (1:4) TO TELEFONE (1:4).
+   125        MOVE TELEFONE-CLI (5:4) TO TELEFONE (6:4).
+   126        WRITE REG-ATR FROM DETALHE AFTER ADVANCING 1 LINE.
+   127        ADD 1 TO CT-LIN.
+   128        ADD 1 TO TOTAL-CLI.
+   129 CABECALHO.
+   130        ADD 1 TO CT-PAG.
+   131        MOVE CT-PAG TO VAR-PAG.
+   132        MOVE SPACES TO REG-ATR.
+   133        WRITE REG-ATR AFTER ADVANCING PAGE.
+   134        WRITE REG-ATR FROM CAB-01 AFTER ADVANCING 1 LINE.
+   135        WRITE REG-ATR FROM CAB-02 AFTER ADVANCING 1 LINES.
+   136        WRITE REG-ATR FROM CAB-03 AFTER ADVANCING 3 LINES.
+   137        WRITE REG-ATR FROM CAB-04 AFTER ADVANCING 3 LINES.
+   138        WRITE REG-ATR FROM CAB-06 AFTER ADVANCING 1 LINE.
+   139        MOVE SPACES TO REG-ATR.
+   140        WRITE REG-ATR AFTER ADVANCING 1 LINES.
+   141        MOVE 1 TO CT-LIN.
+   142 CABECALHO-FINAL.
+   143        WRITE REG-ATR FROM CAB-05 AFTER ADVANCING 2 LINES.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1712     Code:         733     Dictionary:        1916

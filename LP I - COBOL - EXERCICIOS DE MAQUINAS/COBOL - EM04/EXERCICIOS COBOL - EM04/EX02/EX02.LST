@@ -1,0 +1,227 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Nov-13 00:27 Page   1
+*                                        E.CBL
+* Options: LIST(E.LST) ASMLIST(E.GRP)
+     1 IDENTIFICATION DIVISION.
+     2
+     3 PROGRAM-ID.    EX02.
+     4 AUTHOR.        LEANDRO FERNANDES & EDEL CORADI.
+     5 INSTALLATION.  FATEC-SP.
+     6 DATE-WRITTEN.  07/11/2013.
+     7 DATE-COMPILED. 26-Nov-13 00:27.
+     8 SECURITY.
+     9
+    10 ENVIRONMENT DIVISION.
+    11
+    12 CONFIGURATION SECTION.
+    13 SOURCE-COMPUTER. IBM-PC.
+    14 OBJECT-COMPUTER. IBM-PC.
+    15 SPECIAL-NAMES.   DECIMAL-POINT IS COMMA.
+    16
+    17 INPUT-OUTPUT SECTION.
+    18 FILE-CONTROL.
+    19 SELECT CADANT   ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    20 SELECT ARQMOV   ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    21 SELECT CADATU   ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    22 SELECT RELOCORR ASSIGN TO DISK.
+    23
+    24 DATA DIVISION.
+    25
+    26 FILE SECTION.
+    27 FD CADANT
+    28    LABEL RECORD ARE STANDARD VALUE OF FILE-ID IS "CADANT.DAT".
+    29
+    30 01 REG-ANT.
+    31   02 CC-ANT    PIC 9(03).
+    32   02 TIPO-ANT  PIC X(01).
+    33   02 ENDER-ANT PIC X(50).
+    34
+    35 FD ARQMOV
+    36    LABEL RECORD ARE STANDARD VALUE OF FILE-ID IS "ARQMOV.DAT".
+    37
+    38 01 REG-MOV.
+    39   02 CC-MOV    PIC 9(03).
+    40   02 TIPO-MOV  PIC X(01).
+    41   02 ENDER-MOV PIC X(50).
+    42
+    43 FD CADATU
+    44    LABEL RECORD ARE STANDARD VALUE OF FILE-ID IS "CADATU.DAT".
+    45
+    46 01 REG-ATU.
+    47   02 CC-ATU    PIC 9(03).
+    48   02 TIPO-ATU  PIC X(01).
+    49   02 ENDER-ATU PIC X(50).
+    50
+    51 FD RELOCORR
+    52    LABEL RECORD IS OMITTED.
+    53
+    54 01 REG-ATR     PIC X(80).
+    55
+    56
+    57 WORKING-STORAGE SECTION.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Nov-13 00:27 Page   2
+*                                        E.CBL
+    58
+    59 77 FIM-ARQ    PIC 9(01) VALUE 0.
+    60 77 CH-CADANT  PIC X(04) VALUE SPACES.
+    61 77 CH-ARQMOV  PIC X(04) VALUE SPACES.
+    62 77 CT-PAG     PIC 9(03) VALUE 0.
+    63 77 CT-LIN     PIC 9(02) VALUE 41.
+    64
+    65 01 CAB-01.
+    66    02 FILLER      PIC X(29) VALUE SPACES.
+    67    02 FILLER      PIC X(22) VALUE "Relação de atualização".
+    68    02 FILLER      PIC X(15) VALUE SPACES.
+    69    02 FILLER      PIC X(05) VALUE "Pag. ".
+    70    02 VAR-PAG     PIC ZZ9.
+    71    02 FILLER      PIC X(06) VALUE SPACES.
+    72
+    73 01 CAB-02.
+    74    02 FILLER    PIC X(06) VALUE SPACES.
+    75    02 FILLER    PIC X(06) VALUE "codigo".
+    76    02 FILLER    PIC X(06) VALUE SPACES.
+    77    02 FILLER    PIC X(04) VALUE "tipo".
+    78    02 FILLER    PIC X(15) VALUE SPACES.
+    79    02 FILLER    PIC X(08) VALUE "mensagem".
+    80    02 FILLER    PIC X(35) VALUE SPACES.
+    81
+    82 01 DETALHE.
+    83    02 FILLER       PIC X(08) VALUE SPACES.
+    84    02 CC-REL       PIC 999.
+    85    02 FILLER       PIC X(08) VALUE SPACES.
+    86    02 TIPO-REL     PIC X(01).
+    87    02 FILLER       PIC X(08) VALUE SPACES.
+    88    02 MENSAGEM-REL PIC X(30).
+    89    02 FILLER       PIC X(22) VALUE SPACES.
+    90
+    91 PROCEDURE DIVISION.
+    92
+    93 PROGRAM02.
+    94
+    95 PERFORM INICIO.
+    96 PERFORM PRINCIPAL UNTIL CH-CADANT EQUAL HIGH-VALUES AND
+    97                         CH-ARQMOV EQUAL HIGH-VALUES.
+    98 PERFORM FIM.
+    99 STOP RUN.
+   100
+   101 INICIO.
+   102        OPEN INPUT CADANT ARQMOV OUTPUT CADATU RELOCORR.
+   103        PERFORM LER-CADANT.
+   104        PERFORM LER-ARQMOV.
+   105
+   106 LER-CADANT.
+   107        READ CADANT AT END MOVE HIGH-VALUES TO CH-CADANT.
+   108        IF CH-CADANT EQUAL HIGH-VALUES
+   109           NEXT SENTENCE
+   110        ELSE
+   111           MOVE CC-ANT TO CH-CADANT
+   112        END-IF.
+   113
+   114 LER-ARQMOV.
+   115        READ ARQMOV AT END MOVE HIGH-VALUES TO CH-ARQMOV.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Nov-13 00:27 Page   3
+*                                        E.CBL
+   116        IF CH-ARQMOV EQUAL HIGH-VALUES
+   117           NEXT SENTENCE
+   118        ELSE
+   119           MOVE CC-MOV TO CH-ARQMOV
+   120        END-IF.
+   121
+   122 PRINCIPAL.
+   123        IF CT-LIN GREATER THAN 40
+   124           PERFORM CABECALHO
+   125        END-IF
+   126*IGUAL
+   127        IF CH-CADANT EQUAL CH-ARQMOV
+   128           IF TIPO-MOV EQUAL "A"
+   129              MOVE CC-ANT TO CC-REL
+   130              MOVE TIPO-ANT TO TIPO-REL
+   131              MOVE "REGISTRO SUBSTITUIDO" TO MENSAGEM-REL
+   132              WRITE REG-ATR FROM DETALHE AFTER ADVANCING 1 LINE
+   133
+   134              MOVE TIPO-MOV TO TIPO-REL
+   135              MOVE "REGISTRO SUBSTITUTO" TO MENSAGEM-REL
+   136              WRITE REG-ATR FROM DETALHE AFTER ADVANCING 1 LINE
+   137
+   138              PERFORM GRAVA-ARQMOV
+   139           END-IF
+   140
+   141           IF TIPO-MOV EQUAL "E"
+   142              MOVE CC-ANT TO CC-REL
+   143              MOVE TIPO-ANT TO TIPO-REL
+   144              MOVE "REGISTRO EXCLUIDO" TO MENSAGEM-REL
+   145              WRITE REG-ATR FROM DETALHE AFTER ADVANCING 1 LINE
+   146           END-IF
+   147
+   148           IF TIPO-MOV EQUAL "I"
+   149              MOVE CC-MOV TO CC-REL
+   150              MOVE TIPO-MOV TO TIPO-REL
+   151              MOVE "INCLUSÃO P/REG. JÁ EXISTENTE" TO MENSAGEM-REL
+   152              WRITE REG-ATR FROM DETALHE AFTER ADVANCING 1 LINE
+   153
+   154              PERFORM GRAVA-CADANT
+   155           END-IF
+   156
+   157           PERFORM LER-CADANT
+   158           PERFORM LER-ARQMOV
+   159
+   160        ELSE
+   161*CADANT
+   162           IF CH-CADANT LESS CH-ARQMOV
+   163              PERFORM GRAVA-CADANT
+   164              PERFORM LER-CADANT
+   165*CADMOV
+   166           ELSE
+   167              MOVE CC-MOV   TO CC-REL
+   168              MOVE TIPO-MOV TO TIPO-REL
+   169
+   170              IF TIPO-MOV EQUAL "A"
+   171                 MOVE "ALTERAÇÃO P/REG. INEXISTENTE"
+   172                 TO MENSAGEM-REL
+   173              END-IF
+* Microsoft COBOL Version 4.5        L2.4 revision 002 26-Nov-13 00:27 Page   4
+*                                        E.CBL
+   174
+   175              IF TIPO-MOV EQUAL "E"
+   176                 MOVE "EXCLUSÃO P/REG. INEXISTENTE"
+   177                 TO MENSAGEM-REL
+   178              END-IF
+   179
+   180              IF TIPO-MOV EQUAL "I"
+   181                  MOVE "REGISTRO INCLUIDO" TO MENSAGEM-REL
+   182                  PERFORM GRAVA-ARQMOV
+   183              END-IF
+   184
+   185              WRITE REG-ATR FROM DETALHE AFTER ADVANCING 1 LINE
+   186              PERFORM LER-ARQMOV
+   187
+   188           END-IF
+   189        END-IF.
+   190
+   191 GRAVA-ARQMOV.
+   192        MOVE CC-MOV    TO CC-ATU.
+   193        MOVE TIPO-MOV  TO TIPO-ATU.
+   194        MOVE ENDER-MOV TO ENDER-ATU.
+   195        WRITE REG-ATU.
+   196
+   197 GRAVA-CADANT.
+   198        MOVE CC-ANT    TO CC-ATU.
+   199        MOVE TIPO-ANT  TO TIPO-ATU.
+   200        MOVE ENDER-ANT TO ENDER-ATU.
+   201        WRITE REG-ATU.
+   202
+   203 CABECALHO.
+   204        ADD 1 TO CT-PAG.
+   205        MOVE CT-PAG TO VAR-PAG.
+   206        MOVE SPACES TO REG-ATR.
+   207        WRITE REG-ATR AFTER ADVANCING PAGE.
+   208        WRITE REG-ATR FROM CAB-01 AFTER ADVANCING 1 LINE.
+   209        WRITE REG-ATR FROM CAB-02 AFTER ADVANCING 2 LINES.
+   210        MOVE 0 TO CT-LIN.
+   211 FIM.
+   212        CLOSE CADANT ARQMOV CADATU RELOCORR.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1844     Code:        1258     Dictionary:        2249

@@ -1,0 +1,88 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 28-Aug-13 20:58 Page   1
+*                                       EX02.CBL
+* Options: LIST(EX02.LST) ASMLIST(EX02.GRP)
+     1 IDENTIFICATION DIVISION.
+     2
+     3 PROGRAM-ID. EX02.
+     4 AUTHOR. LEANDRO FERNANDES & EDEL CORADI.
+     5 INSTALLATION. FATEC-SP.
+     6 DATE-WRITTEN. 10/08/2013.
+     7 DATE-COMPILED. 28-Aug-13 20:58.
+     8 SECURITY.
+     9
+    10 ENVIRONMENT DIVISION.
+    11
+    12 CONFIGURATION SECTION.
+    13 SOURCE-COMPUTER. IBM-PC.
+    14 OBJECT-COMPUTER. IBM-PC.
+    15 SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    16
+    17 INPUT-OUTPUT SECTION.
+    18 FILE-CONTROL.
+    19 SELECT CADALU ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    20 SELECT CADATU ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    21
+    22 DATA DIVISION.
+    23
+    24 FILE SECTION.
+    25 FD CADALU
+    26    LABEL         RECORD         ARE         STANDARD
+    27    VALUE       OF FILE-ID       IS        "CADALU.DAT".
+    28
+    29 01 REG-ENT.
+    30        02 NUMERO PIC 9(05).
+    31        02 NOME PIC X(20).
+    32        02 SEXO PIC X(01).
+    33        02 DATA-NASCIMENTO.
+    34               03 DD PIC 9(2).
+    35               03 MM PIC 9(2).
+    36               03 AAAA PIC 9(4).
+    37
+    38 FD CADATU
+    39    LABEL         RECORD         ARE         STANDARD
+    40    VALUE       OF FILE-ID       IS        "CADATU.DAT".
+    41
+    42 01 REG-SAI.
+    43        02 NUMERO-SAI PIC 9(05).
+    44        02 NOME-SAI PIC X(20).
+    45        02 DATA-NASCIMENTO-SAI.
+    46               03 DD PIC 9(2).
+    47               03 MM PIC 9(2).
+    48               03 AAAA PIC 9(4).
+    49
+    50 WORKING-STORAGE SECTION.
+    51 77 FIM-ARQ PIC 9(1) VALUE 0.
+    52
+    53 PROCEDURE DIVISION.
+    54
+    55 PROGRAMA02.
+    56
+    57 PERFORM INICIO.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 28-Aug-13 20:58 Page   2
+*                                       EX02.CBL
+    58 PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL 1.
+    59 PERFORM TERMINO.
+    60
+    61 STOP RUN.
+    62
+    63 INICIO.
+    64        OPEN INPUT CADALU OUTPUT CADATU.
+    65        PERFORM VERIFICA-FIM.
+    66 COPIA.
+    67        MOVE NUMERO TO NUMERO-SAI.
+    68        MOVE NOME TO NOME-SAI.
+    69        MOVE DATA-NASCIMENTO TO DATA-NASCIMENTO-SAI.
+    70        WRITE REG-SAI.
+    71 VERIFICA-FIM.
+    72        READ CADALU AT END MOVE 1 TO FIM-ARQ.
+    73 TERMINO.
+    74        CLOSE CADALU CADATU.
+    75 PRINCIPAL.
+    76        PERFORM COPIA.
+    77        PERFORM VERIFICA-FIM.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1032     Code:         316     Dictionary:        1273

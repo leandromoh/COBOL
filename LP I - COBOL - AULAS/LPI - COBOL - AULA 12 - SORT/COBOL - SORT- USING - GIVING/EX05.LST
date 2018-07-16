@@ -1,0 +1,68 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 21-Sep-04 08:49 Page   1
+*                                       EX05.CBL
+* Options: LIST(EX05.LST) ASMLIST(EX05.GRP)
+     1 IDENTIFICATION  DIVISION.
+     2 PROGRAM-ID. EXEMPLO05.
+     3 AUTHOR. ANGELA/HIRO.
+     4 INSTALLATION. FATEC-SP.
+     5 DATE-WRITTEN. 21/09/2004.
+     6 DATE-COMPILED. 21-Sep-04 08:49.
+     7 SECURITY. APENAS O AUTOR PODE MODIFICA-LO.
+     8*REMARKS.  FAZ O SORT DO ARQUIVO DE ENTRADA.
+     9*          USANDO USING E GIVING.
+    10*          GERANDO COMO SAIDA UM ARQUIVO CLASSIFICADO.
+    11
+    12 ENVIRONMENT     DIVISION.
+    13 CONFIGURATION   SECTION.
+    14 SOURCE-COMPUTER. IBM-PC.
+    15 OBJECT-COMPUTER. IBM-PC.
+    16 SPECIAL-NAMES.  DECIMAL-POINT IS COMMA.
+    17
+    18 INPUT-OUTPUT    SECTION.
+    19 FILE-CONTROL.
+    20     SELECT ENTRADA ASSIGN  TO DISK
+    21     ORGANIZATION   IS LINE SEQUENTIAL.
+    22     SELECT TRAB    ASSIGN  TO DISK.
+    23     SELECT SAIDA   ASSIGN  TO DISK
+    24     ORGANIZATION   IS LINE SEQUENTIAL.
+    25
+    26 DATA            DIVISION.
+    27 FILE            SECTION.
+    28 FD  ENTRADA
+    29     LABEL RECORD ARE STANDARD
+    30     VALUE OF FILE-ID IS "ENT.DAT".
+    31 01  REG-ENT.
+    32     02 COD-ENT  PIC 9(04).
+    33     02 NOME-ENT PIC X(30).
+    34
+    35 SD  TRAB.
+    36 01  REG-TRAB.
+    37     02 COD-TRAB  PIC 9(04).
+    38     02 NOME-TRAB PIC X(30).
+    39
+    40 FD  SAIDA
+    41     LABEL RECORD ARE STANDARD
+    42     VALUE OF FILE-ID IS "SAI.DAT".
+    43 01  REG-SAI.
+    44     03 COD-SAI   PIC 9(04).
+    45     03 NOME-SAI  PIC X(30).
+    46
+    47 WORKING-STORAGE SECTION.
+    48 77  FIM-ARQ     PIC X(03) VALUE "NAO".
+    49
+    50 PROCEDURE       DIVISION.
+    51
+    52 PGM-EX05.
+    53    SORT         TRAB
+    54                 ASCENDING  KEY  COD-TRAB
+    55                 USING      ENTRADA
+    56                 GIVING     SAIDA
+    57    STOP         RUN.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 21-Sep-04 08:49 Page   2
+*                                       EX05.CBL
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1248     Code:         265     Dictionary:        1174

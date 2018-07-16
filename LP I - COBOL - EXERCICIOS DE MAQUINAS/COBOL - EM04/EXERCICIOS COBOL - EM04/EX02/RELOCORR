@@ -1,0 +1,12 @@
+                                                                                
+                             Relação de atualização               Pag.   1      
+
+      codigo      tipo               mensagem                                   
+        001        I        REGISTRO INCLUIDO                                   
+        002        C        REGISTRO SUBSTITUIDO                                
+        002        A        REGISTRO SUBSTITUTO                                 
+        005        C        REGISTRO EXCLUIDO                                   
+        007        I        INCLUSÃO P/REG. JÁ EXISTENTE                        
+        010        A        ALTERAÇÃO P/REG. INEXISTENTE                        
+        011        E        EXCLUSÃO P/REG. INEXISTENTE                         
+        013        I        REGISTRO INCLUIDO                                   
